@@ -1,12 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const CLOUDFRONT_URL = 'https://drutegwkh099g.cloudfront.net';
+const CLOUDFRONT_URL = 'https://dr1q2k6iz2tcl.cloudfront.net';
 
 const mediaFiles = [
   'dd208480c697eb68a91f73df5ca904a.jpg',
+  'image2.png',
   'video1.mp4',
-  'imagen2.png'
 ];
 
 const Container = styled.div`

@@ -1,13 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-const CLOUDFRONT_URL = 'https://dr1q2k6iz2tcl.cloudfront.net';
-
-const mediaFiles = [
-  'dd208480c697eb68a91f73df5ca904a.jpg',
-  'image2.png',
-  'video1.mp4',
-];
+const CLOUDFRONT_URL = 'https://drutegwkh099g.cloudfront.net';
 
 const Container = styled.div`
   padding: 2rem;
@@ -46,11 +40,20 @@ const FileName = styled.div`
 `;
 
 export default function GalleryViewer() {
+  const [files, setFiles] = useState([]);
+
+  useEffect(() => {
+    fetch('http://localhost:8000/api/files')
+      .then((res) => res.json())
+      .then((data) => setFiles(data))
+      .catch((err) => console.error('Error fetching files:', err));
+  }, []);
+
   return (
     <Container>
       <Title>Galería multimedia</Title>
       <Grid>
-        {mediaFiles.map((file, index) => {
+        {files.map((file, index) => {
           const url = `${CLOUDFRONT_URL}/${file}`;
           const ext = file.split('.').pop().toLowerCase();
           const isVideo = ['mp4', 'webm', 'mov'].includes(ext);
@@ -58,19 +61,12 @@ export default function GalleryViewer() {
           return (
             <Card key={index}>
               {isVideo ? (
-                <video
-                  controls
-                  style={{ width: '100%', height: '240px', objectFit: 'cover' }}
-                >
+                <video controls style={{ width: '100%', height: '240px', objectFit: 'cover' }}>
                   <source src={url} type={`video/${ext}`} />
-                  Tu navegador no soporta el video.
+                  Tu navegador no soporta video.
                 </video>
               ) : (
-                <img
-                  src={url}
-                  alt={file}
-                  style={{ width: '100%', height: '240px', objectFit: 'cover' }}
-                />
+                <img src={url} alt={file} style={{ width: '100%', height: '240px', objectFit: 'cover' }} />
               )}
               <FileName>{file}</FileName>
             </Card>

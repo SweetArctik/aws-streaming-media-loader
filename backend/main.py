@@ -1,14 +1,17 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from s3_client import list_bucket_files
+from s3client import list_bucket_files
 import os
 from dotenv import load_dotenv
 
+load_dotenv()
+
 app = FastAPI()
 
+# Permitir acceso desde cualquier origen (puedes restringir a React después)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # o tu dominio local
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

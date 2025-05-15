@@ -1,19 +1,19 @@
 import boto3
 import os
+from dotenv import load_dotenv
 
-aws_access_key = os.getenv("AWS_ACCESS_KEY_ID")
-aws_secret_key = os.getenv("AWS_SECRET_ACCESS_KEY")
-region = os.getenv("AWS_REGION")
-bucket_name = os.getenv("BUCKET_NAME")
+load_dotenv()
 
-s3 = boto3.client(
-    "s3",
-    aws_access_key_id=aws_access_key,
-    aws_secret_access_key=aws_secret_key,
-    region_name=region
+session = boto3.session.Session(
+    aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+    aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+    region_name=os.getenv("AWS_REGION")
 )
 
+s3 = session.client("s3")
+BUCKET_NAME = os.getenv("AWS_BUCKET_NAME")
+
 def list_bucket_files():
-    response = s3.list_objects_v2(Bucket=bucket_name)
-    files = response.get("Contents", [])
-    return [f"https://{bucket_name}.s3.{region}.amazonaws.com/{file['Key']}" for file in files]
+    response = s3.list_objects_v2(Bucket=BUCKET_NAME)
+    contents = response.get("Contents", [])
+    return [item["Key"] for item in contents]

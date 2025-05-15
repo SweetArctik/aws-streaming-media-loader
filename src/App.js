@@ -1,25 +1,23 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import S3Uploader from './components/S3Uploader';
+import GalleryViewer from './components/GalleryViewer';
 
-function App() {
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="p-4 font-sans">
+        <nav className="mb-6 flex gap-4 text-blue-600">
+          <Link to="/subir">Subir archivo</Link>
+          <Link to="/galeria">Galería</Link>
+        </nav>
+
+        <Routes>
+          <Route path="/subir" element={<S3Uploader />} />
+          <Route path="/galeria" element={<GalleryViewer />} />
+          <Route path="*" element={<div>Selecciona una opción en el menú</div>} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
-
-export default App;

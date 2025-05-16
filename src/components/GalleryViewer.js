@@ -1,78 +1,72 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import './Styles/GalleryStyles.css'
 
-const CLOUDFRONT_URL = 'https://drutegwkh099g.cloudfront.net';
+const CLOUDFRONT_URL = "https://d18srlidxjcidy.cloudfront.net";
 
-const Container = styled.div`
-  padding: 2rem;
-  font-family: sans-serif;
-  background: #f3f4f6;
-  min-height: 100vh;
-`;
-
-const Title = styled.h1`
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 1.5rem;
-`;
-
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
-`;
-
-const Card = styled.div`
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
-`;
-
-const FileName = styled.div`
-  padding: 0.5rem;
-  text-align: center;
-  font-size: 0.9rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-export default function GalleryViewer() {
+const GalleryViewer = () => {
   const [files, setFiles] = useState([]);
+  const [activeTab, setActiveTab] = useState("videos");
+  const [modalFile, setModalFile] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/files')
-      .then((res) => res.json())
-      .then((data) => setFiles(data))
-      .catch((err) => console.error('Error fetching files:', err));
+    fetch('http://127.0.0.1:8000/api/files')
+      .then(res => res.json())
+      .then(setFiles)
+      .catch(console.error);
   }, []);
 
-  return (
-    <Container>
-      <Title>Galería multimedia</Title>
-      <Grid>
-        {files.map((file, index) => {
-          const url = `${CLOUDFRONT_URL}/${file}`;
-          const ext = file.split('.').pop().toLowerCase();
-          const isVideo = ['mp4', 'webm', 'mov'].includes(ext);
+  const isImage = file => /\.(png|jpg|jpeg|gif)$/i.test(file);
+  const isVideo = file => /\.(mp4|webm|ogg)$/i.test(file);
 
-          return (
-            <Card key={index}>
-              {isVideo ? (
-                <video controls style={{ width: '100%', height: '240px', objectFit: 'cover' }}>
-                  <source src={url} type={`video/${ext}`} />
-                  Tu navegador no soporta video.
-                </video>
-              ) : (
-                <img src={url} alt={file} style={{ width: '100%', height: '240px', objectFit: 'cover' }} />
-              )}
-              <FileName>{file}</FileName>
-            </Card>
-          );
-        })}
-      </Grid>
-    </Container>
+  const filteredFiles = files.filter(file =>
+    activeTab === "images" ? isImage(file) : isVideo(file)
   );
-}
+
+  return (
+    <div className="gallery-container">
+      <h1 className="gallery-title">Galería multimedia</h1>
+
+      <div className="gallery-buttons">
+        <button
+          className={`gallery-button ${activeTab === 'videos' ? 'active' : ''}`}
+          onClick={() => setActiveTab('videos')}
+        >
+          Videos
+        </button>
+        <button
+          className={`gallery-button ${activeTab === 'images' ? 'active' : ''}`}
+          onClick={() => setActiveTab('images')}
+        >
+          Imágenes
+        </button>
+      </div>
+
+      <div className="gallery-grid">
+        {filteredFiles.map((file, i) => (
+          <div key={i} className="gallery-item" onClick={() => setModalFile(file)}>
+            {isImage(file) ? (
+              <img src={`${CLOUDFRONT_URL}/${file}`} alt={file} />
+            ) : (
+              <video src={`${CLOUDFRONT_URL}/${file}`} controls />
+            )}
+            <p>{file}</p>
+          </div>
+        ))}
+      </div>
+
+      {modalFile && (
+        <div className="modal-backdrop" onClick={() => setModalFile(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            {isImage(modalFile) ? (
+              <img src={`${CLOUDFRONT_URL}/${modalFile}`} alt={modalFile} />
+            ) : (
+              <video src={`${CLOUDFRONT_URL}/${modalFile}`} controls autoPlay />
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default GalleryViewer;

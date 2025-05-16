@@ -8,7 +8,6 @@ load_dotenv()
 
 app = FastAPI()
 
-# Permitir acceso desde cualquier origen (puedes restringir a React después)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -19,4 +18,7 @@ app.add_middleware(
 
 @app.get("/api/files")
 def get_files():
-    return list_bucket_files()
+    try:
+        return list_bucket_files()
+    except Exception as e:
+        return {"error": str(e)}

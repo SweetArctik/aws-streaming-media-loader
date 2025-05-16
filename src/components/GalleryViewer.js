@@ -38,12 +38,12 @@ const GalleryViewer = () => {
         >
           Videos
         </button>
-        <button
+        {/* <button
           className={`gallery-button ${activeTab === 'images' ? 'active' : ''}`}
           onClick={() => setActiveTab('images')}
         >
           Imágenes
-        </button>
+        </button> */}
       </div>
 
       <div className="gallery-grid">

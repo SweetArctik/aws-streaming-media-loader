@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import './Styles/S3Uploader.css';
 
 const s3 = new S3Client({
   region: 'us-east-2',
@@ -31,21 +32,27 @@ export default function S3Uploader() {
       };
 
       await s3.send(new PutObjectCommand(uploadParams));
-      setStatus(`✅ ¡Subido correctamente como ${file.name}!`);
+      setStatus(`¡Subido correctamente como ${file.name}!`);
     } catch (err) {
       console.error(err);
-      setStatus('❌ Error: ' + err.message);
+      setStatus('Error: ' + err.message);
     }
   };
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'Arial' }}>
+    <div className="uploader-container">
       <h2>Sube tu archivo multimedia</h2>
-      <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-      <button onClick={handleUpload} style={{ marginLeft: '1rem' }}>
+      <input
+        className="uploader-input"
+        type="file"
+        onChange={(e) => setFile(e.target.files[0])}
+      />
+      <button className="uploader-button" onClick={handleUpload}>
         Subir
       </button>
-      <p style={{ color: status.startsWith('❌') ? 'red' : 'green' }}>{status}</p>
+      <p className={`uploader-status ${status.startsWith('❌') ? 'error' : status ? 'success' : ''}`}>
+        {status}
+      </p>
     </div>
   );
 }
